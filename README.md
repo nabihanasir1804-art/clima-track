@@ -1,46 +1,77 @@
-# Atmos — Weather App
+<div align="center">
 
-Atmos is a responsive weather app using Open-Meteo geocoding and forecast APIs. It presents current model estimates, hourly and seven-day forecasts, location-local time, and Celsius/Fahrenheit display.
+# Atmos
 
-## Features
+### Weather for any city. Clear forecasts. Thoughtful location matching.
 
-- Pakistan-first search for unqualified city names, with a global fallback when no exact Pakistani result is found; ambiguous Pakistani matches prompt for a selection.
-- Explicit country and region context validation, including queries such as `Paris, Texas, USA`.
-- Exact normalized place-name matching, populated-place feature checks, valid coordinate checks, deterministic ranking, and an inline ambiguity message.
-- Current model-estimated temperature, feels-like temperature, humidity, wind speed, pressure, and WMO condition visuals.
-- Hourly and seven-day forecasts, using the API timezone and local forecast timestamps.
-- Celsius/Fahrenheit toggle using raw Celsius values and a single presentation conversion.
-- Accessible loading/error messages, cancellation, stale-response guards, and responsive layouts.
+A responsive weather app powered by [Open-Meteo](https://open-meteo.com/), with current conditions, hourly and seven-day forecasts, and local time for the selected place.
 
-## Data and API
+[![Open-Meteo](https://img.shields.io/badge/Weather%20data-Open--Meteo-3182CE?style=for-the-badge)](https://open-meteo.com/)
+[![JavaScript](https://img.shields.io/badge/Built%20with-JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111)](https://developer.mozilla.org/docs/Web/JavaScript)
+[![Tests](https://img.shields.io/badge/Tests-npm%20test-2E8B57?style=for-the-badge)](#verification)
 
-- Geocoding: `https://geocoding-api.open-meteo.com/v1/search`
-- Forecast: `https://api.open-meteo.com/v1/forecast`
-- The geocoding filter is `countryCode=PK` (ISO 3166-1 alpha-2), as named in the [official Geocoding API documentation](https://open-meteo.com/en/docs/geocoding-api).
-- Forecast requests explicitly request Celsius and km/h. The app checks response unit metadata for Celsius, km/h, and hPa.
-- “Current” values are Open-Meteo model estimates, not direct local-station observations. Model coverage and update times vary.
+</div>
+
+## Preview
+
+<p align="center">
+  <img src="assets/screenshot-welcome.png" alt="Atmos weather app search screen" width="48%">
+  <img src="assets/screenshot-lahore-weather.png" alt="Atmos showing Lahore weather and forecasts" width="48%">
+</p>
+
+## What you can do
+
+- **Search globally:** Pakistan-first lookup for unqualified city names, with international fallback when there is no reliable Pakistani match.
+- **Choose the right place:** country and region qualifiers are respected; ambiguous matches are shown as selectable options instead of silently choosing a location.
+- **See current conditions:** temperature, feels-like temperature, humidity, wind, pressure, and a weather condition icon.
+- **Plan ahead:** hourly conditions and a seven-day forecast use the selected location’s timezone.
+- **Switch units:** toggle between Celsius and Fahrenheit without converting the underlying value repeatedly.
+- **Use it on any screen:** responsive layout, keyboard-accessible controls, reduced-motion support, and clear loading and error states.
+
+## Data and accuracy
+
+Atmos uses the Open-Meteo Geocoding API to find places and the Forecast API for weather data. Forecast requests use the selected place’s coordinates and automatic timezone detection.
+
+Current values are **weather-model estimates**, not direct thermometer readings. Open-Meteo may return model-grid coordinates slightly different from the requested city coordinates, and forecast coverage varies by place.
+
+- [Open-Meteo Geocoding API](https://open-meteo.com/en/docs/geocoding-api)
+- [Open-Meteo Forecast API](https://open-meteo.com/en/docs)
 
 ## Run locally
 
-From the project directory, run `python3 -m http.server 8000` and open `http://localhost:8000/`.
+The app is static and can be served with Python:
 
-## Tests
+```sh
+python3 -m http.server 8000
+```
 
-Run the local deterministic suites from the project root:
+Then open [http://localhost:8000](http://localhost:8000).
+
+## Verification
+
+Install the project’s test dependency once:
+
+```sh
+npm ci
+```
+
+Run deterministic unit and browser-fixture suites from the project root:
 
 ```sh
 npm test
 ```
 
-This runs the ranking, conversion, geocoding, and fixture-based Chromium suites. The browser fixture suite does not substitute for live API verification.
-
-Live checks use real Open-Meteo responses and require an internet connection:
+These tests use controlled fixtures for repeatable results. For checks against **real Open-Meteo responses**, use the live commands below; they require an internet connection and do not replace API responses with fixtures:
 
 ```sh
-npm run verify:live:matrix
-npm run verify:mirpur
-npm run test:e2e:live
-npm run test:e2e:live:mirpur
+npm run verify:live:matrix       # finite 42-place provider matrix
+npm run verify:mirpur            # live Mirpur geocoding queries
+npm run test:e2e:live            # live browser searches across eight cities
+npm run test:e2e:live:mirpur     # live browser regression for five Mirpur queries
 ```
 
-The live browser suites do not intercept or replace API responses.
+## Project links
+
+- [Open-Meteo](https://open-meteo.com/)
+- [Geocoding documentation](https://open-meteo.com/en/docs/geocoding-api)
+- [Forecast documentation](https://open-meteo.com/en/docs)
