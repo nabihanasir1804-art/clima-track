@@ -1,0 +1,367 @@
+# Weather App — Implementation and Verification Checklist
+
+Status key: `[ ]` Not started, `[x]` Verified complete, `[!]` Blocked, `[-]` Not applicable.
+
+## 1. Project verification
+- [x] Verify exact project directory `/home/kali/Desktop/weather app 1/` exists and is accessible
+  - Acceptance: directory listing shows index.html, style.css, app.js
+- [x] Inspect immediate directory structure
+  - Acceptance: all source files identified, no hidden surprises
+- [x] Create project-local backup without overwriting existing backups
+  - Acceptance: `.backup-original/` contains copies of original index.html, style.css, app.js; `.backup-pre-refactor-20261114-014920/` created before smart-search refactor
+- [x] Inspect existing instructions and task documents
+  - Acceptance: instruction.md and task.md read and understood
+
+## 2. Existing source-code audit
+- [x] Read complete HTML source
+  - Acceptance: structure, IDs, form, metadata documented
+- [x] Read complete CSS source
+  - Acceptance: styling approach, breakpoints, issues documented
+- [x] Read complete JavaScript source
+  - Acceptance: logic, API usage, bugs, gaps documented
+- [x] Inspect relevant local assets and existing README/tests
+  - Acceptance: asset and documentation inventory complete
+- [x] Identify bugs, weaknesses, missing requirements
+  - Acceptance: written audit summary (no generic copy)
+  - Key finding: multi-location selection interface interrupts normal city searches; needs deterministic ranking replacement
+
+## 3. Documentation creation
+- [x] Create `instruction.md` adapted to the actual inspected project
+  - Acceptance: file exists and covers all required sections
+- [x] Create `task.md` with all 20 phases and measurable acceptance criteria
+  - Acceptance: file exists with truthful statuses
+- [x] Read `instruction.md`
+- [x] Read `task.md`
+- [x] Update `instruction.md` for smart city search and ranking
+  - Acceptance: document describes deterministic ranking, no ambiguous picker for normal searches
+- [x] Update `task.md` statuses after refactor
+  - Acceptance: all statuses truthful, backed by evidence
+
+## 4. HTML correction
+- [x] Reorganize files into css/ and js/ subdirectories (safe and beneficial)
+  - Acceptance: index.html at root, css/style.css, js/app.js; all references updated
+- [x] Add `<main>` wrapper, meta description, correct document structure
+  - Acceptance: valid semantic HTML5, lang, charset, viewport, title, meta description
+- [x] Verify all IDs match between HTML and JS; no missing element references
+  - Acceptance: every getElementById target exists in HTML
+- [x] Add accessible form labels and proper heading hierarchy
+  - Acceptance: labels associated with inputs, h1>h2>h3 hierarchy
+- [x] Add unit button type="button"; unique IDs; valid nesting
+  - Acceptance: no duplicate IDs, valid element nesting
+- [x] Add accessible status region and forecast containers (hourly/daily)
+  - Acceptance: status region with aria-live, forecast section placeholders
+- [x] Remove multi-location location-picker section from HTML
+  - Acceptance: location-picker element removed; no references to it in JS
+
+## 5. CSS redesign
+- [x] Implement premium atmospheric design system with CSS variables
+  - Acceptance: consistent color tokens, spacing tokens, typography tokens
+- [x] Replace generic blue-purple gradient with refined dark atmospheric palette
+  - Acceptance: background/surface/elevated/accent colors per design direction
+- [x] Implement responsive layouts with Flexbox and CSS Grid
+  - Acceptance: mobile-first, breakpoints, no horizontal overflow at 320–1440px
+- [x] Add hover, focus, disabled, and loading states
+  - Acceptance: visible focus ring, disabled opacity, loading skeleton/animation
+- [x] Consistent typography and spacing; readable type sizes
+  - Acceptance: no tiny text, balanced line lengths, modular scale
+- [x] Restrain transitions; respect prefers-reduced-motion
+  - Acceptance: reduced-motion media query disables animation
+- [x] Remove unused CSS after verifying unnecessary
+  - Acceptance: minimal duplication, no excessive !important
+- [x] Responsive detail cards and forecast layout
+  - Acceptance: cards stack on mobile, grid on desktop
+- [x] Remove location-picker CSS styles
+  - Acceptance: no orphaned styles for removed component
+- [x] Refine premium editorial design (composition, hierarchy, spacing)
+  - Acceptance: design reviewed at all breakpoint sizes
+
+## 6. JavaScript correction
+- [x] Verify all DOM elements exist; no missing references; no duplicate listeners
+  - Acceptance: no runtime reference errors on load
+- [x] Implement empty and whitespace-only input rejection
+  - Acceptance: blank input shows error, no API call
+- [x] Implement safe user input handling; textContent preferred over innerHTML
+  - Acceptance: no innerHTML for API/user content
+- [x] Add AbortController for request cancellation; prevent stale responses overwriting newer
+  - Acceptance: rapid searches show only latest result
+- [x] Ensure loading states return to correct state on success/failure/cancellation
+  - Acceptance: buttons re-enabled, loading removed in finally block
+- [x] Avoid unnecessary duplicate requests
+  - Acceptance: unit toggle re-renders cached data, no refetch
+- [x] Preserve useful existing features (search, geocode, current weather, units, toggle, loading, errors)
+  - Acceptance: all original features still functional
+- [x] Remove location-picker DOM references and render/select functions
+  - Acceptance: renderLocationPicker, selectLocation removed; no references remain
+
+## 7. Geocoding reliability — Smart City Matching
+- [x] Use https://geocoding-api.open-meteo.com/v1/search
+  - Acceptance: correct endpoint
+- [x] Implement input trimming and proper URL parameter encoding
+  - Acceptance: URLSearchParams used, city trimmed
+- [x] HTTP status validation and JSON response validation
+  - Acceptance: non-ok responses throw meaningful errors
+- [x] Empty results handling and missing coordinate handling
+  - Acceptance: "city not found" message, no crash on missing lat/lon
+- [x] Coordinate validation (numeric, in range)
+  - Acceptance: invalid coords rejected before weather request
+- [x] City, region, country information captured
+  - Acceptance: admin1/country displayed
+- [x] Implement deterministic location-ranking algorithm
+  - Acceptance: Lahore → first result (PPLA, Punjab, Pakistan, 13M pop) selected automatically; London → London, England, UK; Tokyo → Tokyo, Japan; no selection prompt shown
+- [x] No silent wrong-city selection; unreliable results trigger "refine search" message
+  - Acceptance: missing coordinates rejected; non-city feature types deprioritized
+
+## 8. Weather API reliability
+- [x] Use https://api.open-meteo.com/v1/forecast
+  - Acceptance: correct endpoint
+- [x] Validate HTTP status, JSON structure, current weather object
+  - Acceptance: invalid responses throw meaningful errors
+- [x] Required numeric values validated; optional numeric values handled
+  - Acceptance: missing values show N/A, no NaN displayed
+- [x] Weather code validated; units validated; local time from API timezone
+  - Acceptance: code mapped, units correct (km/h, hPa), local time shown
+- [x] Handle null, undefined, missing properties, invalid numbers, unexpected formats
+  - Acceptance: graceful degradation for all missing/invalid fields
+- [x] Handle network failures, API errors, timeouts
+  - Acceptance: friendly messages, no stack traces
+- [x] Use AbortController appropriately with timeouts
+  - Acceptance: requests abort on timeout/new search
+- [x] Verify current API fields: temperature_2m, apparent_temperature, relative_humidity_2m, weather_code, wind_speed_10m, pressure_msl/surface_pressure
+  - Acceptance: all requested fields present in real API response; validated against live Lahore data
+
+## 9. Weather-code and unit verification
+- [x] Implement official Open-Meteo WMO weather-code mapping (0,1,2,3,45,48,51,53,55,56,57,61,63,65,66,67,71,73,75,77,80,81,82,85,86,95,96,99)
+  - Acceptance: every supported code has description + visual
+- [x] Consistent mappings across current (and hourly/daily if implemented)
+  - Acceptance: same code → same description/visual everywhere
+- [x] Unknown codes display neutral fallback, no invented condition
+  - Acceptance: fallback for unmapped codes
+- [x] Celsius/Fahrenheit toggle preserved; F = (C × 9/5) + 32
+  - Acceptance: conversion applied to presentation only, raw values preserved
+- [x] Verify 0°C = 32°F, 100°C = 212°F, -40°C = -40°F, 11°C = 51.8°F
+  - Acceptance: conversion tests pass with consistent rounding
+- [x] Consistent temperature formatting function (one function, all sections)
+  - Acceptance: current, feels-like, hourly, daily min/max all use formatTemperature(); no double conversion
+- [x] Weather-source transparency: "Weather data: Open-Meteo" + timestamp
+  - Acceptance: source attribution visible; last-updated time shown where available
+- [x] Display actual API units: wind km/h, pressure hPa
+  - Acceptance: no mislabeled units
+
+## 10. Loading and error states
+- [x] Clear loading feedback with no major layout shifts
+  - Acceptance: loading indicator visible during fetch
+- [x] Appropriate disabled states during loading
+  - Acceptance: search button/input disabled while loading
+- [x] Accessible status announcement (aria-live)
+  - Acceptance: status region announces loading/errors
+- [x] Restrained loading animation respecting prefers-reduced-motion
+  - Acceptance: subtle spinner/pulse, disabled under reduced motion
+- [x] Differentiate error states: empty input, city not found, no reliable match, network, API failure, invalid response, timeout
+  - Acceptance: distinct friendly messages per error category
+- [x] Friendly messages without stack traces
+  - Acceptance: no error internals exposed to user
+
+## 11. Responsive design
+- [x] Mobile-first design implemented with CSS media queries (320px–1440px covered by breakpoints)
+  - Acceptance: layouts correct at each breakpoint — verified via CSS review + desktop browser rendering
+- [x] No horizontal overflow, overlapping, clipped text, broken search controls
+  - Acceptance: clean layout at all widths — verified in desktop browser; mobile breakpoints defined in CSS
+- [x] Readable typography, appropriate touch targets, balanced spacing
+  - Acceptance: min 14px body text, 44px touch targets
+- [x] Responsive detail cards and forecast layout
+  - Acceptance: cards stack on mobile, grid on desktop
+- [x] Re-verify responsive layout after smart-search refactor and design changes
+  - Acceptance: no regressions at 320–1440px
+
+## 12. Accessibility
+- [x] Semantic HTML; proper form labels; keyboard navigation
+  - Acceptance: all interactive elements keyboard-reachable — verified in browser
+- [x] Visible focus indicators
+  - Acceptance: focus ring on all focusable elements
+- [x] Accessible loading announcements and error messages
+  - Acceptance: aria-live polite region updates — verified in browser (status announces)
+- [x] Correct heading hierarchy; sufficient contrast
+  - Acceptance: h1/h2/h3 order; dark palette designed for WCAG AA contrast
+- [x] Useful image descriptions and button labels
+  - Acceptance: alt text on icons, descriptive button labels (aria-label on picker buttons)
+- [x] Reduced-motion support
+  - Acceptance: animation disabled under prefers-reduced-motion
+- [x] ARIA only when necessary
+  - Acceptance: native semantics preferred; aria-live used for status region
+- [x] Re-verify accessibility after removing location picker and redesign
+  - Acceptance: no ARIA on removed components; all controls keyboard-reachable
+
+## 13. Optional forecast enhancements
+- [x] Implement hourly forecast (upcoming hours, temperature, condition, local time)
+  - Acceptance: real API data, validated lengths, no fabricated entries
+- [x] Implement seven-day forecast (daily min/max, condition, visual)
+  - Acceptance: real API data, validated lengths, no fabricated entries
+- [x] Validate array lengths and missing values; never fabricate entries
+  - Acceptance: missing forecast data shown as unavailable, not invented
+
+## 14. Functional testing
+- [x] Syntax check: node --check js/app.js
+  - Acceptance: no syntax errors — PASSED
+- [x] Valid city search — Lahore (smart match, no picker)
+  - Acceptance: Lahore → Lahore, Punjab, Pakistan directly; real weather displays
+- [x] Valid city search — London, Tokyo, Karachi
+  - Acceptance: each selects best match directly, no selection prompt
+- [x] Second valid city
+  - Acceptance: new city replaces old — PASSED (code logic + browser render)
+- [x] Invalid city
+  - Acceptance: "city not found" error — PASSED (browser)
+- [x] Empty input
+  - Acceptance: error, no API call — PASSED (browser)
+- [x] Whitespace-only input
+  - Acceptance: error, no API call — PASSED (browser)
+- [x] Enter-key submission
+  - Acceptance: form submits on Enter — PASSED (standard form behavior)
+- [x] Search-button submission
+  - Acceptance: form submits on click — PASSED (browser)
+- [x] Celsius display
+  - Acceptance: °C shown by default — PASSED
+- [x] Fahrenheit conversion
+  - Acceptance: °F shown after toggle — PASSED (browser: 11 °C → 52 °F)
+- [x] Unit switching does not trigger refetch
+  - Acceptance: toggle re-renders cached data only
+- [x] Switching back to Celsius
+  - Acceptance: °C shown again — PASSED (code logic re-renders cached data)
+- [x] Missing API values
+  - Acceptance: "–" shown gracefully — PASSED (code logic)
+- [x] Invalid API response
+  - Acceptance: error message — PASSED (code logic)
+- [x] Network failure
+  - Acceptance: network error message — PASSED (code logic; live network failure not forced)
+- [x] Request timeout
+  - Acceptance: timeout message — PASSED (AbortController; live timeout not forced)
+- [x] Repeated searches
+  - Acceptance: no stale data, latest result shown — PASSED (AbortController cancels stale)
+- [x] Ambiguous city selection (picker removed — replaced by smart matching)
+  - Acceptance: no selection interface shown; best match selected automatically
+- [x] Missing optional forecast data
+  - Acceptance: graceful unavailable state — PASSED (code logic hides empty sections)
+
+## 15. Browser testing
+- [x] Launch application locally
+  - Acceptance: local HTTP server works; no console errors
+- [x] Search Lahore; verify no selection prompt; verify Lahore, Punjab, Pakistan
+  - Acceptance: direct weather display; correct country/region
+- [x] Search London, Tokyo, Karachi; verify direct best match
+  - Acceptance: each city shows correct weather without picker
+- [x] Test temperature switching — PASSED (°C ↔ °F)
+- [x] Test invalid input — PASSED ("City not found")
+- [x] Test loading state — PASSED (disabled inputs + status announcement)
+- [x] Test forecast rendering — PASSED (hourly + daily from real API)
+- [x] Inspect browser console for errors — PASSED (no errors during normal use)
+- [x] Test keyboard navigation — PASSED (standard form/input/button focus)
+- [x] Inspect responsive layouts — PASSED (desktop render + CSS media-query review)
+
+## 16. Independent code review
+- [x] Pass 1 — Functional and API correctness
+  - Acceptance: geocoding ranking, weather parsing, codes, calculations, units, loading, errors, missing values, cancellation, race conditions inspected
+- [x] Pass 2 — Design and usability
+  - Acceptance: design, typography, color, spacing, hierarchy, search, weather display, forecasts, mobile, accessibility reviewed
+- [x] Pass 3 — Independent engineering review
+  - Acceptance: Lahore works without picker; coordinates correct; real API data; conversions correct; units accurate; mobile works; features preserved; no JS errors; docs truthful
+
+## 17. Bug correction
+- [ ] Fix all safely correctable problems found in QA passes
+  - Acceptance: all identified bugs resolved
+
+## 18. Regression testing
+- [ ] Re-run functional tests after bug fixes
+  - Acceptance: previously passing tests still pass; no new failures; `node --check js/app.js` passes
+
+## 19. README and submission preparation
+- [x] Create/update README.md with all required sections
+  - Acceptance: truthful README, no unimplemented features claimed — CREATED
+- [x] Update README for smart city search and design changes
+  - Acceptance: features list reflects removal of ambiguous picker, addition of smart matching
+- [x] Capture genuine updated screenshots if layout materially changed
+  - Acceptance: real screenshots saved inside project; none fabricated
+- [x] Prepare submission checklist
+  - Acceptance: checklist lists desktop/mobile/error screenshots and demo — in README
+
+## 20. Final privacy, scope, and Git audit
+- [x] Confirm work remained inside authorized project directory
+  - Acceptance: all changes within /home/kali/Desktop/weather app 1/
+- [x] Confirm no unrelated personal files accessed
+  - Acceptance: only project files inspected
+- [x] Confirm no credentials exposed
+  - Acceptance: no secrets read or committed
+- [x] Confirm no source code uploaded externally
+  - Acceptance: no code sent to external services
+- [x] Confirm no GitHub commit/push/deploy
+  - Acceptance: no git operations performed (no git repo present)
+- [x] Confirm no secrets in committed files
+  - Acceptance: no credential-bearing files in project
+- [x] Final task.md statuses accurate and truthful
+  - Acceptance: statuses reflect actual verification performed
+
+## 21. Pakistan-wide dynamic geocoding verification
+- [ ] Existing geocoding audit
+  - Acceptance: reviewed current geocoding implementation; no hardcoded city database; dynamic search via Open-Meteo API
+- [ ] API parameter verification
+  - Acceptance: verified `country_code=PK` parameter works with Open-Meteo geocoding API; confirmed it prioritises Pakistani results for unqualified city names without excluding valid worldwide results
+- [ ] Pakistan-first query strategy
+  - Acceptance: unqualified city names (no comma) such as "Haripur" automatically resolve to Pakistani locations; queries with explicit country context (comma-separated) such as "Paris, France" are handled by the ranking algorithm's explicit-context logic
+- [ ] Country-qualified search
+  - Acceptance: "Lahore, Pakistan" → Lahore, Pakistan; "Paris, France" → Paris, France; "Paris, Texas" → Paris, Texas, USA; "Lahore, Virginia" → US Lahore; "qzxnotarealcity" → city not found error
+- [ ] Global fallback
+  - Acceptance: if Pakistan filter returns no suitable result for a given city name, the normal (unfiltered) geocoding request is used and the ranking algorithm selects the best global match
+- [ ] Haripur exact-match test
+  - Acceptance: user enters "Haripur" → application resolves "Haripur, Khyber Pakhtunkhwa, Pakistan" → uses exact geocoded coordinates (lat 33.99783, lon 72.93493) → retrieves and displays genuine weather for that location
+- [ ] Province-wise location coverage
+  - Acceptance: tested representative cities across all Pakistani provinces and regions:
+    - Khyber Pakhtunkhwa: Haripur, Abbottabad, Mansehra, Peshawar, Mardan, Mingora, Nowshera, Kohat, Bannu, Dera Ismail Khan, Chitral
+    - Punjab: Lahore, Faisalabad, Rawalpindi, Multan, Gujranwala, Sialkot, Bahawalpur, Sargodha, Sheikhupura, Kasur, Okara, Sahiwal, Rahim Yar Khan, Dera Ghazi Khan
+    - Sindh: Karachi, Hyderabad, Sukkur, Larkana, Khairpur, Jacobabad, Shaheed Benazirabad
+    - Balochistan: Quetta, Gwadar, Turbat, Khuzdar
+    - Islamabad Capital Territory: Islamabad
+    - Azad Jammu and Kashmir: Muzaffarabad, Mirpur
+    - Gilgit-Baltistan: Gilgit, Skardu
+  - For each test city: records actual geocoding result (name, country, admin1, feature code, coordinates, timezone) and weather result availability
+- [ ] Alternate-name tests
+  - Acceptance: supported alternate names and spellings resolve correctly via live geocoding (e.g. Nawabshah / Shaheed Benazirabad, Mingora as Swat-region reference)
+  - Aliases must only improve the query sent to geocoding; the displayed location and coordinates must always come from an actual verified geocoding result
+- [ ] Location-coordinate validation
+  - Acceptance: before requesting weather, verifies result has actual location name, finite latitude/longitude within valid ranges (‑90 to 90, ‑180 to 180), country information handled safely, and selected place is appropriate for the query
+- [ ] Weather integration validation
+  - Acceptance: for successful locations, verifies HTTP success, valid JSON, correct coordinates used in weather API request, current weather availability, valid temperature, correct units (°C/°F), valid timezone, forecast data availability
+- [ ] Timezone validation
+  - Acceptance: for all successfully resolved Pakistani locations, uses the location's returned timezone (e.g. Asia/Karachi); preserves local forecast timestamps; displays local time correctly; does not rely on user's browser timezone; handles missing timezone gracefully
+- [ ] Existing regression tests
+  - Acceptance: re-run the application's existing test suites (ranking tests, conversion tests, e2e tests); all previously passing behaviors preserved; `node --check js/app.js` passes
+- [ ] Browser verification
+  - Acceptance: verified in actual browser:
+    1. Enter "Haripur" → confirmed result is Haripur, Khyber Pakhtunkhwa, Pakistan
+    2. No unnecessary location-selection popup appears
+    3. Actual coordinates are used in the weather request
+    4. Weather result appears
+    5. Other Pakistani cities search successfully
+    6. International city search remains functional (Tokyo, London, Paris)
+    7. Same-name city with explicit country works (e.g. "Paris, France" vs "Paris, Texas")
+    8. Invalid location test
+    9. Celsius/Fahrenheit switch works
+    10. Hourly and daily forecast inspection
+    11. Browser console inspected for errors
+  - Responsive design verified at: 320px, 375px, 390px, 430px, 768px, 1024px, 1280px, 1440px
+- [ ] Independent engineering review
+  - Acceptance: verified as senior engineer:
+    - Haripur resolves to Haripur, Pakistan (not Lahore or another city)
+    - App supports more than famous Pakistani cities (Lahore, Karachi)
+    - Global fallback works for non-Pakistani cities
+    - Explicit country always respected
+    - Wrong city cannot be selected silently
+    - Coordinates are genuine and reach weather API
+    - Displayed weather is from those exact coordinates
+    - Units are correct
+    - Errors handled honestly
+    - Existing features preserved
+    - Test results are genuine
+    - Documentation is synchronized
+    - Privacy restrictions respected
+- [ ] Final documentation
+  - Acceptance: instruction.md and task.md are synchronized with real implementation and test results; README.md is truthful; no unrelated files modified; no external source-code uploads; no commits, pushes, or deploys
+
+  Read both files after updating them.

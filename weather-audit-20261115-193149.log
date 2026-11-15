@@ -1,0 +1,236 @@
+
+
+========== PROJECT IDENTITY ==========
+Project: /home/kali/Desktop/weather app 1
+Working directory: /home/kali/Desktop/weather app 1
+Date: 2026-11-15T19:31:49+05:00
+Report: /home/kali/Desktop/weather app 1/weather-audit-20261115-193149.log
+[PASS] Exact target directory confirmed
+
+
+========== SOURCE FILES AND JAVASCRIPT SYNTAX ==========
+[FOUND] index.html
+[FOUND] css/style.css
+[FOUND] js/app.js
+[FOUND] favicon.svg
+[FOUND] instruction.md
+[FOUND] task.md
+[FOUND] README.md
+
+--- node --check js/app.js ---
+[PASS] node --check js/app.js
+
+
+========== PROJECT AUTOMATED TESTS ==========
+[WARN] No npm test script found; checking available standalone test files
+
+--- node tests/ranking.js ---
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open '../js/app.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (/home/kali/Desktop/weather app 1/tests/ranking.js:6:17)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '../js/app.js'
+}
+
+Node.js v24.21.0
+[FAIL] node tests/ranking.js (exit 1)
+
+--- node tests/conversions.js ---
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open '../js/app.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (/home/kali/Desktop/weather app 1/tests/conversions.js:6:17)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '../js/app.js'
+}
+
+Node.js v24.21.0
+[FAIL] node tests/conversions.js (exit 1)
+
+--- node tests/geocoding.js ---
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open '../js/app.js'
+    at Object.readFileSync (node:fs:483:20)
+    at Object.<anonymous> (/home/kali/Desktop/weather app 1/tests/geocoding.js:5:17)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '../js/app.js'
+}
+
+Node.js v24.21.0
+[FAIL] node tests/geocoding.js (exit 1)
+
+--- node tests/e2e.js (standalone E2E fallback) ---
+PASS - local server ready before browser launch
+PASS - welcome state shows no weather card
+PASS - Haripur place rendered (expected "Khyber Pakhtunkhwa, Pakistan", got "Khyber Pakhtunkhwa, Pakistan")
+PASS - temperature presentation matches fixture raw value (expected "24 °C", got "24 °C")
+PASS - weather request uses selected Haripur latitude (expected "33.99783", got "33.99783")
+PASS - weather request uses selected Haripur longitude (expected "72.93493", got "72.93493")
+PASS - hourly forecast rendered
+PASS - daily forecast rendered
+PASS - unit toggle converts raw Celsius once (expected "76 °F", got "76 °F")
+PASS - London global fallback resolves UK
+PASS - London performs PK-filtered and unrestricted geocoding
+PASS - Paris, Texas respects region and country
+PASS - 320px viewport has no horizontal overflow with weather visible
+PASS - 360px viewport has no horizontal overflow with weather visible
+PASS - 375px viewport has no horizontal overflow with weather visible
+PASS - 390px viewport has no horizontal overflow with weather visible
+PASS - 430px viewport has no horizontal overflow with weather visible
+PASS - 768px viewport has no horizontal overflow with weather visible
+PASS - 1024px viewport has no horizontal overflow with weather visible
+PASS - 1280px viewport has no horizontal overflow with weather visible
+PASS - 1440px viewport has no horizontal overflow with weather visible
+PASS - failed query clears previous result
+PASS - empty query shows validation message
+PASS - no browser console errors (0)
+PASS - no page errors (0)
+PASS - no failed network requests (0)
+API requests: [
+  {
+    "url": "https://geocoding-api.open-meteo.com/v1/search?name=Haripur&count=10&language=en&format=json&countryCode=PK",
+    "status": 200
+  },
+  {
+    "url": "https://api.open-meteo.com/v1/forecast?latitude=33.99783&longitude=72.93493&current=temperature_2m%2Crelative_humidity_2m%2Capparent_temperature%2Cis_day%2Cweather_code%2Cwind_speed_10m%2Cpressure_msl&hourly=temperature_2m%2Cweather_code&daily=weather_code%2Ctemperature_2m_max%2Ctemperature_2m_min&timezone=auto&temperature_unit=celsius&wind_speed_unit=kmh",
+    "status": 200
+  },
+  {
+    "url": "https://geocoding-api.open-meteo.com/v1/search?name=London&count=10&language=en&format=json&countryCode=PK",
+    "status": 200
+  },
+  {
+    "url": "https://geocoding-api.open-meteo.com/v1/search?name=London&count=10&language=en&format=json",
+    "status": 200
+  },
+  {
+    "url": "https://api.open-meteo.com/v1/forecast?latitude=51.50853&longitude=-0.12574&current=temperature_2m%2Crelative_humidity_2m%2Capparent_temperature%2Cis_day%2Cweather_code%2Cwind_speed_10m%2Cpressure_msl&hourly=temperature_2m%2Cweather_code&daily=weather_code%2Ctemperature_2m_max%2Ctemperature_2m_min&timezone=auto&temperature_unit=celsius&wind_speed_unit=kmh",
+    "status": 200
+  },
+  {
+    "url": "https://geocoding-api.open-meteo.com/v1/search?name=Paris%2C+Texas&count=10&language=en&format=json",
+    "status": 200
+  },
+  {
+    "url": "https://api.open-meteo.com/v1/forecast?latitude=33.66094&longitude=-95.55551&current=temperature_2m%2Crelative_humidity_2m%2Capparent_temperature%2Cis_day%2Cweather_code%2Cwind_speed_10m%2Cpressure_msl&hourly=temperature_2m%2Cweather_code&daily=weather_code%2Ctemperature_2m_max%2Ctemperature_2m_min&timezone=auto&temperature_unit=celsius&wind_speed_unit=kmh",
+    "status": 200
+  },
+  {
+    "url": "https://geocoding-api.open-meteo.com/v1/search?name=NoSuchTown&count=10&language=en&format=json&countryCode=PK",
+    "status": 200
+  },
+  {
+    "url": "https://geocoding-api.open-meteo.com/v1/search?name=NoSuchTown&count=10&language=en&format=json",
+    "status": 200
+  }
+]
+RESULT: 26 passed, 0 failed
+Screenshots: assets/e2e-welcome.png, assets/e2e-haripur.png
+[PASS] node tests/e2e.js (standalone E2E fallback)
+[WARN] No verify:live script/file exists; independent live API matrix below will still run
+
+
+========== LIVE OPEN-METEO LOCATION AND WEATHER MATRIX ==========
+Live matrix started: 2026-11-15T19:31:52.376576+05:00
+NOTE: This tests real provider geocoding + weather availability. App ranking is separately covered by the project's own tests/verify:live script.
+
+QUERY | MATCH | REGION | COUNTRY | CODE | COORDINATES | TIMEZONE | TEMP | GRID OFFSET | STATUS
+Haripur | Haripur | Khyber Pakhtunkhwa | Pakistan | PK | 33.99783,72.93493 | Asia/Karachi | 15.6°C (feels 15.0°C) | 1.6 km | PASS
+Mansehra | Mansehra | Khyber Pakhtunkhwa | Pakistan | PK | 34.33023,73.19679 | Asia/Karachi | 11.9°C (feels 10.2°C) | 4.2 km | PASS
+Abbottabad | Abbottabad | Khyber Pakhtunkhwa | Pakistan | PK | 34.14630,73.21168 | Asia/Karachi | 11.4°C (feels 9.5°C) | 1.9 km | PASS
+Peshawar | Peshawar | Khyber Pakhtunkhwa | Pakistan | PK | 34.00800,71.57849 | Asia/Karachi | 16.3°C (feels 15.9°C) | 2.1 km | PASS
+Mardan | Mardan | Khyber Pakhtunkhwa | Pakistan | PK | 34.19794,72.04965 | Asia/Karachi | 16.3°C (feels 16.7°C) | 1.7 km | PASS
+Mingora | Mingora | Khyber Pakhtunkhwa | Pakistan | PK | 34.77950,72.36265 | Asia/Karachi | 13.1°C (feels 11.5°C) | 2.7 km | PASS
+Nowshera | Nowshera | Khyber Pakhtunkhwa | Pakistan | PK | 34.01583,71.98123 | Asia/Karachi | 17.2°C (feels 16.2°C) | 5.2 km | PASS
+Kohat | Kohat | Khyber Pakhtunkhwa | Pakistan | PK | 33.58196,71.44929 | Asia/Karachi | 16.1°C (feels 14.0°C) | 3.8 km | PASS
+Bannu | Bannu | Khyber Pakhtunkhwa | Pakistan | PK | 32.98527,70.60403 | Asia/Karachi | 17.8°C (feels 16.8°C) | 4.3 km | PASS
+Dera Ismail Khan | Dera Ismail Khan | Khyber Pakhtunkhwa | Pakistan | PK | 31.83129,70.90170 | Asia/Karachi | 20.1°C (feels 20.1°C) | 5.1 km | PASS
+Chitral | Chitral | Khyber Pakhtunkhwa | Pakistan | PK | 35.85180,71.78636 | Asia/Karachi | 5.7°C (feels 2.3°C) | 11.7 km | PASS
+Lahore | Lahore | Punjab | Pakistan | PK | 31.55800,74.35071 | Asia/Karachi | 19.8°C (feels 20.1°C) | 5.0 km | PASS
+Faisalabad | Faisalabad | Punjab | Pakistan | PK | 31.41554,73.08969 | Asia/Karachi | 19.8°C (feels 20.8°C) | 5.5 km | PASS
+Rawalpindi | Rawalpindi | Punjab | Pakistan | PK | 33.59733,73.04790 | Asia/Karachi | 16.2°C (feels 15.5°C) | 3.3 km | PASS
+Multan | Multan | Punjab | Pakistan | PK | 30.19679,71.47824 | Asia/Karachi | 23.5°C (feels 22.5°C) | 0.6 km | PASS
+Gujranwala | Gujranwala | Punjab | Pakistan | PK | 32.15567,74.18705 | Asia/Karachi | 19.7°C (feels 20.1°C) | 3.2 km | PASS
+Sialkot | Sialkot | Punjab | Pakistan | PK | 32.49268,74.53134 | Asia/Karachi | 18.9°C (feels 18.6°C) | 3.7 km | PASS
+Bahawalpur | Bahawalpur | Punjab | Pakistan | PK | 29.39779,71.67520 | Asia/Karachi | 22.4°C (feels 21.9°C) | 4.1 km | PASS
+Sargodha | Sargodha | Punjab | Pakistan | PK | 32.08586,72.67418 | Asia/Karachi | 18.9°C (feels 18.8°C) | 4.1 km | PASS
+Karachi | Karachi | Sindh | Pakistan | PK | 24.86080,67.01040 | Asia/Karachi | 26.1°C (feels 28.6°C) | 2.1 km | PASS
+Hyderabad | Hyderābād | Sindh | Pakistan | PK | 25.39689,68.37718 | Asia/Karachi | 27.4°C (feels 26.3°C) | 3.0 km | PASS
+Sukkur | Sukkur | Sindh | Pakistan | PK | 27.70323,68.85889 | Asia/Karachi | 23.5°C (feels 22.0°C) | 3.4 km | PASS
+Larkana | Larkana | Sindh | Pakistan | PK | 27.55898,68.21204 | Asia/Karachi | 23.3°C (feels 19.7°C) | 3.7 km | PASS
+Quetta | Quetta | Balochistan | Pakistan | PK | 30.18414,67.00141 | Asia/Karachi | 9.7°C (feels 6.6°C) | 5.3 km | PASS
+Gwadar | Gwadar | Balochistan | Pakistan | PK | 25.12163,62.32541 | Asia/Karachi | 27.3°C (feels 28.6°C) | 8.6 km | PASS
+Turbat | Turbat | Balochistan | Pakistan | PK | 26.00122,63.04849 | Asia/Karachi | 28.8°C (feels 24.5°C) | 2.6 km | PASS
+Khuzdar | Khuzdar | Balochistan | Pakistan | PK | 27.81193,66.61096 | Asia/Karachi | 16.4°C (feels 12.5°C) | 1.0 km | PASS
+Islamabad | Islamabad | Islamabad | Pakistan | PK | 33.72148,73.04329 | Asia/Karachi | 16.1°C (feels 14.9°C) | 3.7 km | PASS
+Muzaffarabad | Muzaffarabad | Azad Kashmir | Pakistan | PK | 34.37002,73.47082 | Asia/Karachi | 13.7°C (feels 12.4°C) | 3.8 km | PASS
+Mirpur | Mirpur | Punjab | Pakistan | PK | 32.24068,75.34309 | Asia/Karachi | 17.5°C (feels 16.8°C) | 5.0 km | PASS
+Gilgit | Gilgit | Gilgit-Baltistan | Pakistan | PK | 35.91869,74.31245 | Asia/Karachi | 4.9°C (feels 1.9°C) | 5.1 km | PASS
+Skardu | Skardu | Gilgit-Baltistan | Pakistan | PK | 35.29787,75.63372 | Asia/Karachi | 0.4°C (feels -2.4°C) | 3.5 km | PASS
+Hunza | Hunza | Gilgit-Baltistan | Pakistan | PK | 36.26667,74.68333 | Asia/Karachi | -13.7°C (feels -17.6°C) | 3.4 km | PASS
+London | London | England | United Kingdom | GB | 51.50853,-0.12574 | Europe/London | 10.1°C (feels 8.8°C) | 0.5 km | PASS
+Tokyo | Tokyo | Tokyo | Japan | JP | 35.68950,139.69171 | Asia/Tokyo | 10.6°C (feels 10.0°C) | 1.2 km | PASS
+Dubai | Dubai | Dubai | United Arab Emirates | AE | 25.07725,55.30927 | Asia/Dubai | 27.0°C (feels 28.1°C) | 4.1 km | PASS
+New York | New York | New York | United States | US | 40.71427,-74.00597 | America/New_York | 6.5°C (feels 1.9°C) | 1.2 km | PASS
+Sydney | Sydney | New South Wales | Australia | AU | -33.86785,151.20732 | Australia/Sydney | 16.3°C (feels 16.0°C) | 2.4 km | PASS
+Toronto | Toronto | Ontario | Canada | CA | 43.70643,-79.39864 | America/Toronto | 3.8°C (feels -1.0°C) | 0.5 km | PASS
+Singapore | Singapore | - | Singapore | SG | 1.28967,103.85007 | Asia/Singapore | 25.0°C (feels 30.5°C) | 1.8 km | PASS
+Paris, France | Paris | Île-de-France Region | France | FR | 48.85341,2.34880 | Europe/Paris | 12.7°C (feels 10.0°C) | 0.5 km | PASS
+Paris, Texas | Paris | Texas | United States | US | 33.66094,-95.55551 | America/Chicago | 9.1°C (feels 3.6°C) | 1.3 km | PASS
+
+LIVE MATRIX: 42/42 location+weather checks passed; 0 unresolved/context mismatches; 0 API/data errors.
+The Open-Meteo returned weather coordinates may be a nearby model grid point; the request coordinates above are the exact geocoded place coordinates.
+[PASS] Direct live Open-Meteo matrix completed without API/data errors
+
+
+========== LOCAL WEBSITE STATIC-FILE SMOKE TEST ==========
+curl: (7) Failed to connect to 127.0.0.1:58663 after 0 ms: Could not connect to server
+[PASS] Local HTTP server serves index.html (HTTP 200)
+[PASS] HTTP 200 /css/style.css
+[PASS] HTTP 200 /js/app.js
+[PASS] HTTP 200 /favicon.svg
+
+
+========== FINAL SUMMARY ==========
+Passed checks: 8
+Failed checks: 3
+Warnings: 2
+Full output saved to: /home/kali/Desktop/weather app 1/weather-audit-20261115-193149.log
+AUDIT RESULT: Some checks failed. Read the sections above and the saved report.

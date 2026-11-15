@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "puppeteer": "^25.17.0"
+  },
+  "scripts": {
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "node tests/ranking.js && node tests/conversions.js && node tests/geocoding.js",
+    "test:e2e": "node tests/e2e.js",
+    "verify:mirpur": "node tests/verify-mirpur.js",
+    "test:e2e:live": "node tests/e2e-live.js",
+    "verify:live:matrix": "node tests/live-matrix.js",
+    "test:e2e:live:mirpur": "node tests/e2e-live-mirpur.js"
+  }
+}
