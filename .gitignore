@@ -1,0 +1,18 @@
+# Installed dependencies
+node_modules/
+
+# Local backups and audit/work notes
+.backup-*/
+*.log
+task.md
+task.md.bak
+instruction.md
+final_report.md
+final_mirpur_report.md
+
+# Local secrets and OS files
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db

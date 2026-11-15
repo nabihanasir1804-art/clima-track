@@ -4,7 +4,7 @@ Atmos is a responsive weather app using Open-Meteo geocoding and forecast APIs. 
 
 ## Features
 
-- Dynamic global place search, with a Pakistan-focused request first for unqualified names and a global fallback when no reliable Pakistani exact match is found.
+- Pakistan-first search for unqualified city names, with a global fallback when no exact Pakistani result is found; ambiguous Pakistani matches prompt for a selection.
 - Explicit country and region context validation, including queries such as `Paris, Texas, USA`.
 - Exact normalized place-name matching, populated-place feature checks, valid coordinate checks, deterministic ranking, and an inline ambiguity message.
 - Current model-estimated temperature, feels-like temperature, humidity, wind speed, pressure, and WMO condition visuals.
@@ -26,17 +26,21 @@ From the project directory, run `python3 -m http.server 8000` and open `http://l
 
 ## Tests
 
-Run from the `tests/` directory:
+Run the local deterministic suites from the project root:
 
 ```sh
-node ranking.js
-node conversions.js
-node geocoding.js
-node e2e.js
+npm test
 ```
 
-`ranking.js`, `conversions.js`, and `geocoding.js` use controlled fixtures. `e2e.js` launches Chromium and intercepts only the two Open-Meteo endpoints with deterministic fixtures. The browser suite verifies page rendering, requests and coordinates, errors, unit switching, forecasts, and nine viewport widths. It does not establish live API availability or live weather correctness.
+This runs the ranking, conversion, geocoding, and fixture-based Chromium suites. The browser fixture suite does not substitute for live API verification.
 
-## Current verification limitation
+Live checks use real Open-Meteo responses and require an internet connection:
 
-In the audit environment, DNS resolution for `geocoding-api.open-meteo.com` and `api.open-meteo.com` failed. Therefore, real API response checks and live searches were not completed. The browser test uses controlled responses and must not be described as a live API test.
+```sh
+npm run verify:live:matrix
+npm run verify:mirpur
+npm run test:e2e:live
+npm run test:e2e:live:mirpur
+```
+
+The live browser suites do not intercept or replace API responses.
