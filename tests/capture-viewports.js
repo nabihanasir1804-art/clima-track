@@ -1,4 +1,4 @@
-/* Script to capture genuine Chromium screenshots across all 5 target viewports */
+/* Script to capture genuine Chromium screenshots across all target viewports and README documentation assets */
 const {spawn} = require("child_process");
 const path = require("path");
 const fs = require("fs");
@@ -8,7 +8,8 @@ const puppeteer = require("puppeteer");
 
 const PORT = 18774;
 const BASE = `http://127.0.0.1:${PORT}`;
-const ASSETS_DIR = path.join(__dirname, "assets");
+const TESTS_ASSETS_DIR = path.join(__dirname, "assets");
+const DOC_ASSETS_DIR = path.join(ROOT, "assets");
 
 const viewports = [
   { name: "desktop-1440x900", width: 1440, height: 900 },
@@ -29,6 +30,17 @@ const locations = {
     admin1: "Khyber Pakhtunkhwa",
     timezone: "Asia/Karachi",
     population: 100000
+  },
+  Lahore: {
+    name: "Lahore",
+    latitude: 31.558,
+    longitude: 74.35071,
+    feature_code: "PPLA",
+    country_code: "PK",
+    country: "Pakistan",
+    admin1: "Punjab",
+    timezone: "Asia/Karachi",
+    population: 13000000
   }
 };
 
@@ -118,53 +130,80 @@ function weather(place) {
     page.on("request", req => {
       const u = new URL(req.url());
       if (u.hostname === "geocoding-api.open-meteo.com") {
+        const q = u.searchParams.get("name")?.trim();
+        const loc = locations[q] || locations.Lahore;
         req.respond({
           status: 200,
           contentType: "application/json",
           headers: { "Access-Control-Allow-Origin": "*" },
-          body: JSON.stringify({ results: [locations.Haripur] })
+          body: JSON.stringify({ results: [loc] })
         });
         return;
       }
       if (u.hostname === "api.open-meteo.com") {
+        const lat = Number(u.searchParams.get("latitude"));
+        const loc = Object.values(locations).find(x => Math.abs(x.latitude - lat) < 0.1) || locations.Lahore;
         req.respond({
           status: 200,
           contentType: "application/json",
           headers: { "Access-Control-Allow-Origin": "*" },
-          body: JSON.stringify(weather(locations.Haripur))
+          body: JSON.stringify(weather(loc))
         });
         return;
       }
       req.continue();
     });
 
-    // 1. Capture Welcome states for all viewports
+    // 1. Capture Welcome states for all viewports (test evidence)
     for (const vp of viewports) {
       await page.setViewport({ width: vp.width, height: vp.height });
       await page.goto(`${BASE}/`, { waitUntil: "networkidle0" });
       const filename = `welcome-${vp.name}.png`;
-      const filePath = path.join(ASSETS_DIR, filename);
+      const filePath = path.join(TESTS_ASSETS_DIR, filename);
       await page.screenshot({ path: filePath, fullPage: false });
-      console.log(`Saved welcome screenshot: ${filename} (${vp.width}x${vp.height})`);
     }
 
-    // 2. Load weather and capture Weather states for all viewports
+    // Capture official README Welcome Screenshot (1440x900)
     await page.setViewport({ width: 1440, height: 900 });
     await page.goto(`${BASE}/`, { waitUntil: "networkidle0" });
-    await page.$eval("#city-input", (e, v) => { e.value = v; }, "Haripur");
-    await page.click("#search-btn");
-    await page.waitForFunction(() => !document.querySelector("#weather-card").hidden && document.querySelector("#city-name").textContent.trim() === "Haripur", { timeout: 5000 });
+    await page.screenshot({ path: path.join(DOC_ASSETS_DIR, "screenshot-welcome.png"), fullPage: false });
+    console.log("Captured assets/screenshot-welcome.png");
 
-    for (const vp of viewports) {
-      await page.setViewport({ width: vp.width, height: vp.height });
-      await new Promise(r => setTimeout(r, 200)); // allow layout stabilization
-      const filename = `weather-${vp.name}.png`;
-      const filePath = path.join(ASSETS_DIR, filename);
-      await page.screenshot({ path: filePath, fullPage: false });
-      console.log(`Saved weather screenshot: ${filename} (${vp.width}x${vp.height})`);
+    // 2. Load weather for Lahore and capture Weather states
+    await page.goto(`${BASE}/`, { waitUntil: "networkidle0" });
+    await page.$eval("#city-input", (e, v) => { e.value = v; }, "Lahore");
+    await page.click("#search-btn");
+    await page.waitForFunction(() => !document.querySelector("#weather-card").hidden && document.querySelector("#city-name").textContent.trim() === "Lahore", { timeout: 5000 });
+
+    // Official README Lahore Weather Screenshot (Desktop 1440px full page)
+    await page.setViewport({ width: 1440, height: 1020 });
+    await new Promise(r => setTimeout(r, 200));
+    await page.screenshot({ path: path.join(DOC_ASSETS_DIR, "screenshot-lahore-weather.png"), fullPage: false });
+    console.log("Captured assets/screenshot-lahore-weather.png");
+
+    // Official README Forecast Focus Screenshot (Seven-Day Outlook & Hourly timeline)
+    const dailySection = await page.$("#daily-section");
+    if (dailySection) {
+      await dailySection.screenshot({ path: path.join(DOC_ASSETS_DIR, "screenshot-forecast.png") });
+      console.log("Captured assets/screenshot-forecast.png");
     }
 
-    console.log("ALL VIEWPORT SCREENSHOTS SUCCESSFULLY CAPTURED!");
+    // Official README Mobile Screenshot (390px, full page showing reflow)
+    await page.setViewport({ width: 390, height: 844 });
+    await new Promise(r => setTimeout(r, 200));
+    await page.screenshot({ path: path.join(DOC_ASSETS_DIR, "screenshot-mobile.png"), fullPage: true });
+    console.log("Captured assets/screenshot-mobile.png");
+
+    // Test evidence multi-viewport screenshots
+    for (const vp of viewports) {
+      await page.setViewport({ width: vp.width, height: vp.height });
+      await new Promise(r => setTimeout(r, 150));
+      const filename = `weather-${vp.name}.png`;
+      const filePath = path.join(TESTS_ASSETS_DIR, filename);
+      await page.screenshot({ path: filePath, fullPage: false });
+    }
+
+    console.log("ALL DOCUMENTATION AND VIEWPORT SCREENSHOTS SUCCESSFULLY CAPTURED!");
   } catch (err) {
     console.error("Capture failed:", err);
     process.exitCode = 1;
