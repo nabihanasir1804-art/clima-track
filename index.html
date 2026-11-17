@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Check the current weather for any city. Powered by Open-Meteo.">
-    <title>Atmos — Weather App</title>
+    <meta name="description" content="Atmos — Editorial atmospheric weather intelligence powered by Open-Meteo.">
+    <title>Atmos — Weather Intelligence</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
     <link rel="stylesheet" href="css/style.css">
@@ -12,89 +12,198 @@
 </head>
 <body>
 
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
     <header class="site-header">
         <div class="header-inner">
-            <h1>Atmos</h1>
-            <p class="site-subtitle">Accurate weather for any city</p>
+            <div class="brand-group">
+                <span class="brand-beacon" aria-hidden="true"></span>
+                <h1 class="brand-title">ATMOS</h1>
+                <span class="brand-divider" aria-hidden="true">/</span>
+                <p class="site-subtitle">METEOROLOGICAL INTELLIGENCE</p>
+            </div>
+            <div class="header-meta" aria-hidden="true">
+                <span class="model-badge">HIGH-RES MODEL GRID</span>
+            </div>
         </div>
     </header>
 
-    <main class="app">
-        <form id="search-form" class="search-form" novalidate>
-            <label for="city-input" class="visually-hidden">City name</label>
-            <input
-                type="text"
-                id="city-input"
-                name="city"
-                placeholder="Enter a city&hellip;"
-                aria-label="City name"
-                required
-                autocomplete="off"
-            >
-            <button type="submit" id="search-btn" class="search-button">Search</button>
-        </form>
+    <main class="app" id="main-content">
+        <!-- Search bar -->
+        <div class="search-container">
+            <form id="search-form" class="search-form" novalidate>
+                <div class="search-input-wrap">
+                    <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="8.5" cy="8.5" r="5.5"/>
+                        <line x1="12.5" y1="12.5" x2="17" y2="17" stroke-linecap="round"/>
+                    </svg>
+                    <label for="city-input" class="visually-hidden">City name</label>
+                    <input
+                        type="text"
+                        id="city-input"
+                        name="city"
+                        placeholder="Search city, province, or country (e.g. Lahore, Tokyo, Paris)&hellip;"
+                        aria-label="City name"
+                        required
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                </div>
+                <button type="submit" id="search-btn" class="search-button">
+                    <span>Search</span>
+                    <svg class="btn-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
 
-        <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">
+        <!-- Accessible status / disambiguation region -->
+        <div id="status" class="status" role="status" aria-live="polite" aria-atomic="true">
             Search for a city to see its weather.
-        </p>
+        </div>
 
-        <!-- Current weather -->
+        <!-- Welcome screen / Editorial introduction -->
+        <section id="welcome-guide" class="welcome-guide" aria-label="Welcome Guide">
+            <div class="welcome-hero">
+                <div class="welcome-badge">
+                    <span class="badge-dot"></span>
+                    <span>GLOBAL OBSERVATION SYNTHESIS</span>
+                </div>
+                <h2 class="welcome-heading">Atmospheric clarity for any point on Earth.</h2>
+                <p class="welcome-lead">
+                    Query worldwide coordinates with deterministic Pakistan-first resolution, regional context disambiguation, and synoptic multi-day atmospheric models.
+                </p>
+                <div class="quick-destinations" aria-label="Quick search cities">
+                    <span class="destinations-label">QUICK SEARCH:</span>
+                    <div class="chip-group">
+                        <button type="button" class="quick-chip" data-city="Lahore">Lahore</button>
+                        <button type="button" class="quick-chip" data-city="Karachi">Karachi</button>
+                        <button type="button" class="quick-chip" data-city="Islamabad">Islamabad</button>
+                        <button type="button" class="quick-chip" data-city="London">London</button>
+                        <button type="button" class="quick-chip" data-city="Tokyo">Tokyo</button>
+                        <button type="button" class="quick-chip" data-city="New York">New York</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Current weather hero card -->
         <section id="weather-card" class="weather-card" hidden aria-labelledby="city-name">
-            <div class="weather-header">
-                <h2 id="city-name">City</h2>
-                <p id="city-country" class="city-country"></p>
-                <time id="local-time" class="local-time"></time>
-            </div>
-
-            <div class="weather-main">
-                <img id="weather-icon" class="weather-icon" src="" alt="" width="120" height="120">
-                <div class="temperature-wrapper">
-                    <p id="temperature" class="temperature">--&deg;</p>
-                    <p id="description" class="condition">Weather condition</p>
+            <!-- Header bar: location & provenance -->
+            <div class="card-masthead">
+                <div class="masthead-location">
+                    <h2 id="city-name" class="weather-city-name">City</h2>
+                    <p id="city-country" class="weather-region"></p>
+                </div>
+                <div class="masthead-meta">
+                    <time id="local-time" class="weather-local-time"></time>
+                    <span id="data-source" class="data-source"></span>
                 </div>
             </div>
 
-            <p id="feels-note" class="feels-note"></p>
+            <!-- Hero centerpiece: massive temperature + high-res weather illustration -->
+            <div class="weather-hero-center">
+                <div class="hero-reading">
+                    <div class="temperature-cluster">
+                        <p id="temperature" class="weather-temperature">--&deg;</p>
+                    </div>
+                    <div class="condition-cluster">
+                        <span class="condition-status-beacon" aria-hidden="true"></span>
+                        <p id="description" class="weather-condition">Weather condition</p>
+                    </div>
+                    <p id="feels-note" class="weather-feels"></p>
+                </div>
 
-            <p id="data-source" class="data-source"></p>
-
-            <div class="details-grid">
-                <div class="detail-card">
-                    <span class="detail-label">Feels like</span>
-                    <strong id="feels-like" class="detail-value">--</strong>
-                </div>
-                <div class="detail-card">
-                    <span class="detail-label">Humidity</span>
-                    <strong id="humidity" class="detail-value">--</strong>
-                </div>
-                <div class="detail-card">
-                    <span class="detail-label">Wind</span>
-                    <strong id="wind-speed" class="detail-value">--</strong>
-                </div>
-                <div class="detail-card">
-                    <span class="detail-label">Pressure</span>
-                    <strong id="pressure" class="detail-value">--</strong>
+                <div class="hero-visual-frame" aria-hidden="true">
+                    <div class="ambient-glow" aria-hidden="true"></div>
+                    <img id="weather-icon" class="weather-art-icon" src="" alt="" width="140" height="140">
                 </div>
             </div>
 
-            <button type="button" id="unit-btn" class="unit-button">Switch to Fahrenheit (&deg;F)</button>
+            <!-- Supporting weather metrics panel -->
+            <div class="metrics-panel" role="list" aria-label="Current meteorological metrics">
+                <div class="metric-cell" role="listitem">
+                    <div class="metric-cell-head">
+                        <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="metric-tag">FEELS LIKE</span>
+                    </div>
+                    <strong id="feels-like" class="metric-value">--</strong>
+                    <span class="metric-caption">Apparent index</span>
+                </div>
+
+                <div class="metric-cell" role="listitem">
+                    <div class="metric-cell-head">
+                        <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="metric-tag">HUMIDITY</span>
+                    </div>
+                    <strong id="humidity" class="metric-value">--</strong>
+                    <span class="metric-caption">Relative moisture</span>
+                </div>
+
+                <div class="metric-cell" role="listitem">
+                    <div class="metric-cell-head">
+                        <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="metric-tag">WIND SPEED</span>
+                    </div>
+                    <strong id="wind-speed" class="metric-value">--</strong>
+                    <span class="metric-caption">10m velocity</span>
+                </div>
+
+                <div class="metric-cell" role="listitem">
+                    <div class="metric-cell-head">
+                        <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="metric-tag">PRESSURE</span>
+                    </div>
+                    <strong id="pressure" class="metric-value">--</strong>
+                    <span class="metric-caption">Mean sea level</span>
+                </div>
+            </div>
+
+            <!-- Toolbar with Unit toggle -->
+            <div class="card-toolbar">
+                <button type="button" id="unit-btn" class="unit-toggle-pill">
+                    <span class="toggle-pill-dot" aria-hidden="true"></span>
+                    <span class="toggle-label">Switch to Fahrenheit (&deg;F)</span>
+                </button>
+            </div>
         </section>
 
         <!-- Hourly forecast -->
         <section id="hourly-section" class="forecast-section" hidden aria-labelledby="hourly-heading">
-            <h2 id="hourly-heading">Hourly forecast</h2>
-            <div id="hourly-list" class="hourly-list"></div>
+            <div class="section-header">
+                <h2 id="hourly-heading" class="forecast-heading">HOURLY FORECAST</h2>
+                <span class="section-tag">NEXT 12 HOURS</span>
+            </div>
+            <div class="hourly-rail-wrap">
+                <div id="hourly-list" class="hourly-list"></div>
+            </div>
         </section>
 
-        <!-- Daily forecast -->
+        <!-- Seven-day forecast -->
         <section id="daily-section" class="forecast-section" hidden aria-labelledby="daily-heading">
-            <h2 id="daily-heading">Seven-day forecast</h2>
+            <div class="section-header">
+                <h2 id="daily-heading" class="forecast-heading">SEVEN-DAY OUTLOOK</h2>
+                <span class="section-tag">SYNOPTIC TRAJECTORY</span>
+            </div>
             <div id="daily-list" class="daily-list"></div>
         </section>
     </main>
 
     <footer class="site-footer">
-        <p>Weather data provided by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></p>
+        <div class="footer-inner">
+            <p class="footer-copy">ATMOS METEOROLOGICAL OBSERVATORY &middot; POWERED BY <a href="https://open-meteo.com/" target="_blank" rel="noopener">OPEN-METEO</a></p>
+            <p class="footer-disclaimer">Global numerical estimates are synthesized directly from geocoded coordinates.</p>
+        </div>
     </footer>
 
 </body>

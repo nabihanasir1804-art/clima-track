@@ -28,6 +28,7 @@ const statusEl = document.getElementById("status");
 const weatherCard = document.getElementById("weather-card");
 const unitBtn = document.getElementById("unit-btn");
 const dataSourceEl = document.getElementById("data-source");
+const welcomeGuideEl = document.getElementById("welcome-guide");
 
 /* Weather display elements */
 const cityNameEl = document.getElementById("city-name");
@@ -90,23 +91,274 @@ const WEATHER_CODES = {
 
 const UNKNOWN_CODE = { description: "Weather conditions unavailable", icon: "unknown" };
 
-/* Inline SVG weather visuals (trusted internal templates, not user data). */
+/* High-fidelity vector SVG weather visuals (trusted internal templates, not user data). */
 const WEATHER_ICONS = {
-    "clear-day": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#E6B75A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`,
-    "clear-night": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8AB8D8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79"/></svg>`,
-    "partly-cloudy-day": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#E6B75A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.73"/><path d="M14 15H8a3 3 0 0 1-3-3v-1z"/></svg>`,
-    "overcast": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#A9B7C2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 0 1-7-7v-3a7 7 0 0 1 7-7h3a7 7 0 0 1 7 7v3a7 7 0 0 1-7 7z"/></svg>`,
-    "fog": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#A9B7C2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h14M3 13h14M3 17h14"/></svg>`,
-    "drizzle": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8AB8D8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17H4a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3h3M19 21v-4M17 17v-2M15 13v-2M9 19v-4M11 15v-2M6 11v-2M21 17v-2M23 13v-2M21 9v-2"/></svg>`,
-    "freezing-drizzle": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8AB8D8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17H4a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3h3M19 21v-4M17 17v-2M15 13v-2M9 19v-4M11 15v-2M6 11v-2M21 17v-2M23 13v-2M21 9v-2"/><path d="M12 8l2-2 2 2"/></svg>`,
-    "rain": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8AB8D8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17H4a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3h3M19 21v-4M17 17v-2M15 13v-2M9 19v-4M11 15v-2M6 11v-2M21 17v-2M23 13v-2M21 9v-2"/></svg>`,
-    "freezing-rain": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8AB8D8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17H4a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3h3M19 21v-4M17 17v-2M15 13v-2M9 19v-4M11 15v-2M6 11v-2M21 17v-2M23 13v-2M21 9v-2"/><path d="M12 8l2-2 2 2"/></svg>`,
-    "snow": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#A9B7C2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17H4a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3h3M19 21v-4M17 17v-2M15 13v-2M9 19v-4M11 15v-2M6 11v-2M21 17v-2M23 13v-2M21 9v-2"/><path d="M12 14l-3 3M12 14l3 3M12 14l-3-3M12 14l3-3"/></svg>`,
-    "snow-showers": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#A9B7C2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17H4a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3h3M19 21v-4M17 17v-2M15 13v-2M9 19v-4M11 15v-2M6 11v-2M21 17v-2M23 13v-2M21 9v-2"/><path d="M12 14l-3 3M12 14l3 3M12 14l-3-3M12 14l3-3M14 10l-2 2M14 10l2 2"/></svg>`,
-    "showers-day": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#E6B75A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17H4a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3h3M19 21v-4M17 17v-2M15 13v-2M9 19v-4M11 15v-2M6 11v-2M21 17v-2M23 13v-2M21 9v-2"/><circle cx="12" cy="12" r="3" stroke="#E6B75A" stroke-width="2" fill="none"/></svg>`,
-    "thunderstorm": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#E6B75A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg>`,
-    "thunderstorm-hail": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#E6B75A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/><circle cx="12" cy="14" r="1"/></svg>`,
-    "unknown": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#728290" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>`
+    "clear-day": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="14" fill="#F59E0B" fill-opacity="0.25"/>
+        <circle cx="32" cy="32" r="11" fill="url(#sun-grad)"/>
+        <g stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round">
+            <line x1="32" y1="8" x2="32" y2="13"/>
+            <line x1="32" y1="51" x2="32" y2="56"/>
+            <line x1="8" y1="32" x2="13" y2="32"/>
+            <line x1="51" y1="32" x2="56" y2="32"/>
+            <line x1="15" y1="15" x2="18.5" y2="18.5"/>
+            <line x1="45.5" y1="45.5" x2="49" y2="49"/>
+            <line x1="15" y1="49" x2="18.5" y2="45.5"/>
+            <line x1="45.5" y1="18.5" x2="49" y2="15"/>
+        </g>
+        <defs>
+            <linearGradient id="sun-grad" x1="21" y1="21" x2="43" y2="43" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FDE68A"/>
+                <stop offset="1" stop-color="#D97706"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "clear-night": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <path d="M42 16.5A18.5 18.5 0 1 1 20 49 20 20 0 0 0 42 16.5z" fill="url(#moon-grad)" stroke="#38BDF8" stroke-width="1.5"/>
+        <circle cx="48" cy="19" r="1.5" fill="#E0F2FE"/>
+        <circle cx="53" cy="29" r="1.2" fill="#BAE6FD"/>
+        <circle cx="43" cy="38" r="1" fill="#7DD3FC"/>
+        <path d="M21 16l1.2 2.4 2.4 1.2-2.4 1.2-1.2 2.4-1.2-2.4-2.4-1.2 2.4-1.2z" fill="#FDE047"/>
+        <defs>
+            <linearGradient id="moon-grad" x1="16" y1="16" x2="44" y2="48" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#E0F2FE"/>
+                <stop offset="1" stop-color="#38BDF8"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "partly-cloudy-day": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <circle cx="26" cy="24" r="9" fill="#F59E0B"/>
+        <g stroke="#F59E0B" stroke-width="2" stroke-linecap="round">
+            <line x1="26" y1="7" x2="26" y2="11"/>
+            <line x1="12" y1="24" x2="16" y2="24"/>
+            <line x1="16" y1="14" x2="19" y2="17"/>
+            <line x1="36" y1="14" x2="33" y2="17"/>
+        </g>
+        <path d="M20 46h24a10 10 0 0 0 2-19.8 14 14 0 0 0-25-3.2A11 11 0 0 0 20 46z" fill="url(#cloud-grad)" stroke="#94A3B8" stroke-width="1.5"/>
+        <defs>
+            <linearGradient id="cloud-grad" x1="15" y1="20" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FFFFFF"/>
+                <stop offset="1" stop-color="#94A3B8"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "partly-cloudy-night": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <path d="M32 14A14 14 0 0 1 18 30 16 16 0 1 0 32 14z" fill="url(#pcn-moon)" stroke="#38BDF8" stroke-width="1.5"/>
+        <circle cx="36" cy="18" r="1.2" fill="#E0F2FE"/>
+        <circle cx="42" cy="24" r="1" fill="#7DD3FC"/>
+        <path d="M20 46h24a10 10 0 0 0 2-19.8 14 14 0 0 0-25-3.2A11 11 0 0 0 20 46z" fill="url(#pcn-cloud)" stroke="#94A3B8" stroke-width="1.5"/>
+        <defs>
+            <linearGradient id="pcn-moon" x1="16" y1="14" x2="32" y2="30" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#E0F2FE"/>
+                <stop offset="1" stop-color="#38BDF8"/>
+            </linearGradient>
+            <linearGradient id="pcn-cloud" x1="15" y1="20" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FFFFFF"/>
+                <stop offset="1" stop-color="#94A3B8"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "overcast": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <path d="M26 30h22a9 9 0 0 0 1.8-17.8 12 12 0 0 0-21.6-2.9A10 10 0 0 0 26 30z" fill="#475569" fill-opacity="0.6"/>
+        <path d="M16 48h30a11 11 0 0 0 2.2-21.8 15 15 0 0 0-27-3.5A12 12 0 0 0 16 48z" fill="url(#overcast-grad)" stroke="#64748B" stroke-width="1.5"/>
+        <defs>
+            <linearGradient id="overcast-grad" x1="10" y1="20" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#CBD5E1"/>
+                <stop offset="1" stop-color="#64748B"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "fog": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <g stroke="url(#fog-grad)" stroke-width="3" stroke-linecap="round">
+            <line x1="12" y1="22" x2="52" y2="22"/>
+            <line x1="16" y1="30" x2="48" y2="30"/>
+            <line x1="10" y1="38" x2="54" y2="38"/>
+            <line x1="18" y1="46" x2="46" y2="46"/>
+        </g>
+        <defs>
+            <linearGradient id="fog-grad" x1="10" y1="34" x2="54" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#94A3B8"/>
+                <stop offset="0.5" stop-color="#E2E8F0"/>
+                <stop offset="1" stop-color="#94A3B8"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "drizzle": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <path d="M16 36h30a11 11 0 0 0 2.2-21.8 15 15 0 0 0-27-3.5A12 12 0 0 0 16 36z" fill="url(#drizzle-cloud)" stroke="#94A3B8" stroke-width="1.5"/>
+        <g stroke="#38BDF8" stroke-width="2" stroke-linecap="round">
+            <line x1="20" y1="42" x2="18" y2="47"/>
+            <line x1="32" y1="42" x2="30" y2="47"/>
+            <line x1="44" y1="42" x2="42" y2="47"/>
+            <line x1="26" y1="48" x2="24" y2="53"/>
+            <line x1="38" y1="48" x2="36" y2="53"/>
+        </g>
+        <defs>
+            <linearGradient id="drizzle-cloud" x1="10" y1="10" x2="48" y2="36" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#F1F5F9"/>
+                <stop offset="1" stop-color="#94A3B8"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "freezing-drizzle": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <path d="M16 34h30a11 11 0 0 0 2.2-21.8 15 15 0 0 0-27-3.5A12 12 0 0 0 16 34z" fill="url(#fdrizzle-cloud)" stroke="#94A3B8" stroke-width="1.5"/>
+        <g stroke="#38BDF8" stroke-width="2" stroke-linecap="round">
+            <line x1="22" y1="40" x2="20" y2="46"/>
+            <line x1="42" y1="40" x2="40" y2="46"/>
+        </g>
+        <g fill="#7DD3FC">
+            <circle cx="32" cy="45" r="2"/>
+            <circle cx="24" cy="53" r="1.8"/>
+            <circle cx="40" cy="53" r="1.8"/>
+        </g>
+        <defs>
+            <linearGradient id="fdrizzle-cloud" x1="10" y1="10" x2="48" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#E2E8F0"/>
+                <stop offset="1" stop-color="#94A3B8"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "rain": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <path d="M16 34h30a11 11 0 0 0 2.2-21.8 15 15 0 0 0-27-3.5A12 12 0 0 0 16 34z" fill="url(#rain-cloud)" stroke="#64748B" stroke-width="1.5"/>
+        <g stroke="#0284C7" stroke-width="2.5" stroke-linecap="round">
+            <line x1="22" y1="40" x2="18" y2="49"/>
+            <line x1="32" y1="40" x2="28" y2="49"/>
+            <line x1="42" y1="40" x2="38" y2="49"/>
+            <line x1="27" y1="48" x2="23" y2="57"/>
+            <line x1="37" y1="48" x2="33" y2="57"/>
+        </g>
+        <defs>
+            <linearGradient id="rain-cloud" x1="10" y1="10" x2="48" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#CBD5E1"/>
+                <stop offset="1" stop-color="#64748B"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "freezing-rain": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <path d="M16 34h30a11 11 0 0 0 2.2-21.8 15 15 0 0 0-27-3.5A12 12 0 0 0 16 34z" fill="url(#frain-cloud)" stroke="#64748B" stroke-width="1.5"/>
+        <g stroke="#0284C7" stroke-width="2" stroke-linecap="round">
+            <line x1="20" y1="40" x2="17" y2="48"/>
+            <line x1="44" y1="40" x2="41" y2="48"/>
+        </g>
+        <g stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round">
+            <line x1="31" y1="42" x2="31" y2="50"/>
+            <line x1="27" y1="46" x2="35" y2="46"/>
+            <line x1="28" y1="43" x2="34" y2="49"/>
+            <line x1="28" y1="49" x2="34" y2="43"/>
+        </g>
+        <defs>
+            <linearGradient id="frain-cloud" x1="10" y1="10" x2="48" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#CBD5E1"/>
+                <stop offset="1" stop-color="#475569"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "snow": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <g stroke="#E0F2FE" stroke-width="2.5" stroke-linecap="round">
+            <line x1="32" y1="12" x2="32" y2="52"/>
+            <line x1="14.7" y1="22" x2="49.3" y2="42"/>
+            <line x1="14.7" y1="42" x2="49.3" y2="22"/>
+        </g>
+        <g stroke="#7DD3FC" stroke-width="2" stroke-linecap="round">
+            <path d="M32 18l-3 3m3-3l3 3M32 46l-3-3m3 3l3-3"/>
+            <path d="M20 25l0 4m0-4l4 0M44 39l0-4m0 4l-4 0"/>
+            <path d="M20 39l4 0m-4 0l0-4M44 25l-4 0m4 0l0 4"/>
+        </g>
+        <circle cx="32" cy="32" r="3" fill="#BAE6FD"/>
+    </svg>`,
+
+    "snow-showers": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <path d="M16 32h30a11 11 0 0 0 2.2-21.8 15 15 0 0 0-27-3.5A12 12 0 0 0 16 32z" fill="url(#snow-cloud)" stroke="#94A3B8" stroke-width="1.5"/>
+        <g fill="#E0F2FE">
+            <circle cx="22" cy="42" r="2.2"/>
+            <circle cx="32" cy="40" r="2.5"/>
+            <circle cx="42" cy="43" r="2"/>
+            <circle cx="26" cy="50" r="2"/>
+            <circle cx="38" cy="51" r="2.2"/>
+        </g>
+        <defs>
+            <linearGradient id="snow-cloud" x1="10" y1="10" x2="48" y2="32" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#F8FAFC"/>
+                <stop offset="1" stop-color="#94A3B8"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "showers-day": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <circle cx="26" cy="22" r="8" fill="#F59E0B"/>
+        <path d="M20 38h24a9 9 0 0 0 1.8-17.8 13 13 0 0 0-23.2-3A10 10 0 0 0 20 38z" fill="url(#shday-cloud)" stroke="#94A3B8" stroke-width="1.5"/>
+        <g stroke="#0284C7" stroke-width="2.5" stroke-linecap="round">
+            <line x1="24" y1="44" x2="21" y2="52"/>
+            <line x1="33" y1="44" x2="30" y2="52"/>
+            <line x1="42" y1="44" x2="39" y2="52"/>
+        </g>
+        <defs>
+            <linearGradient id="shday-cloud" x1="15" y1="16" x2="45" y2="38" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FFFFFF"/>
+                <stop offset="1" stop-color="#94A3B8"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "showers-night": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <path d="M30 14A12 12 0 0 1 18 28 14 14 0 1 0 30 14z" fill="url(#shn-moon)" stroke="#38BDF8" stroke-width="1.2"/>
+        <path d="M20 38h24a9 9 0 0 0 1.8-17.8 13 13 0 0 0-23.2-3A10 10 0 0 0 20 38z" fill="url(#shn-cloud)" stroke="#94A3B8" stroke-width="1.5"/>
+        <g stroke="#0284C7" stroke-width="2.5" stroke-linecap="round">
+            <line x1="24" y1="44" x2="21" y2="52"/>
+            <line x1="33" y1="44" x2="30" y2="52"/>
+            <line x1="42" y1="44" x2="39" y2="52"/>
+        </g>
+        <defs>
+            <linearGradient id="shn-moon" x1="16" y1="14" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#E0F2FE"/>
+                <stop offset="1" stop-color="#38BDF8"/>
+            </linearGradient>
+            <linearGradient id="shn-cloud" x1="15" y1="16" x2="45" y2="38" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FFFFFF"/>
+                <stop offset="1" stop-color="#94A3B8"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "thunderstorm": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <path d="M14 34h34a12 12 0 0 0 2.4-23.8 16 16 0 0 0-29.4-3.8A13 13 0 0 0 14 34z" fill="url(#tstorm-cloud)" stroke="#475569" stroke-width="1.5"/>
+        <path d="M33 30l-7 14h6l-3 12 11-16h-7l5-10z" fill="#FBBF24" stroke="#D97706" stroke-width="1.5" stroke-linejoin="round"/>
+        <defs>
+            <linearGradient id="tstorm-cloud" x1="10" y1="8" x2="50" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#64748B"/>
+                <stop offset="1" stop-color="#1E293B"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "thunderstorm-hail": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <path d="M14 34h34a12 12 0 0 0 2.4-23.8 16 16 0 0 0-29.4-3.8A13 13 0 0 0 14 34z" fill="url(#thail-cloud)" stroke="#475569" stroke-width="1.5"/>
+        <path d="M30 30l-6 12h5l-2.5 10 9-13h-5.5l4-9z" fill="#FBBF24" stroke="#D97706" stroke-width="1.2" stroke-linejoin="round"/>
+        <circle cx="44" cy="42" r="2.2" fill="#BAE6FD" stroke="#38BDF8" stroke-width="1"/>
+        <circle cx="41" cy="51" r="2" fill="#BAE6FD" stroke="#38BDF8" stroke-width="1"/>
+        <circle cx="18" cy="46" r="2" fill="#BAE6FD" stroke="#38BDF8" stroke-width="1"/>
+        <defs>
+            <linearGradient id="thail-cloud" x1="10" y1="8" x2="50" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#64748B"/>
+                <stop offset="1" stop-color="#1E293B"/>
+            </linearGradient>
+        </defs>
+    </svg>`,
+
+    "unknown": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="22" stroke="#64748B" stroke-width="2.5" stroke-dasharray="4 4"/>
+        <circle cx="32" cy="32" r="4" fill="#94A3B8"/>
+        <path d="M32 16v6M32 42v6M16 32h6M42 32h6" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+    </svg>`
 };
 
 /* --- Helpers --- */
@@ -220,14 +472,6 @@ function contextScore(place, contextParts) {
  *   4. Valid latitude and longitude (required).
  *   5. Relevant country and administrative-region context.
  *   6. Stable, deterministic tie-breaking.
- *
- * Explicit country/region context entered by the user is never ignored:
- * results that do not match the context are excluded.
- *
- * Returns:
- *   { place }                      — single best match
- *   { ambiguous: true, candidates } — multiple confident matches; caller refines
- *   null                           — no usable result
  */
 function rankLocations(results, query) {
     const parts = parseLocationQuery(query);
@@ -348,7 +592,7 @@ function getWeatherCodeEntry(code) {
     return WEATHER_CODES[Math.round(code)] || UNKNOWN_CODE;
 }
 
-/** Build an  src from an inline SVG string. Safe: content is internal only. */
+/** Build an <img> src from an inline SVG string. Safe: content is internal only. */
 function svgDataUri(svg) {
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
@@ -384,7 +628,6 @@ function cancelCurrentRequest() {
 
 /**
  * Fetch with a hard timeout plus external cancellation.
- * An already-aborted external signal results in "Request cancelled."
  */
 async function abortableFetch(url, { signal } = {}) {
     const controller = new AbortController();
@@ -415,16 +658,6 @@ async function abortableFetch(url, { signal } = {}) {
 
 /**
  * Geocode a city name using deterministic smart matching.
- * Ambiguous results are returned for explicit user selection.
- *
- * Pakistan-first strategy:
- * - For unqualified city names (no explicit country/region context,
- i.e. no comma in the query), the geocoding request includes
- *   country_code=PK so the API prioritises Pakistani candidates.
- * - If the user explicitly enters a comma-separated query (e.g.
- *   "Paris, France", "London, United Kingdom", "Haripur, Pakistan"),
- *   the filter is omitted and the ranking algorithm handles the
- *   explicit context via its normal country/region matching logic.
  */
 async function getCoordinates(city) {
     const trimmed = String(city || "").trim();
@@ -492,7 +725,6 @@ async function getCoordinates(city) {
 
 /**
  * Fetch current + forecast weather for coordinates.
- * signal: AbortSignal so the request can be cancelled.
  */
 async function getWeather(latitude, longitude, signal) {
     if (!isFiniteNumber(latitude) || !isFiniteNumber(longitude)) {
@@ -570,10 +802,12 @@ function displayWeather(place, data) {
     const codeEntry = getWeatherCodeEntry(current.weather_code);
     const isDay = current.is_day === 1;
 
-    /* Prefer the night variant for clear conditions after sunset. */
+    /* Prefer the night variant for clear/cloud/shower conditions after sunset. */
     let iconKey = codeEntry.icon;
-    if (iconKey === "clear-day" && isDay === false) {
-        iconKey = "clear-night";
+    if (isDay === false) {
+        if (iconKey === "clear-day") iconKey = "clear-night";
+        else if (iconKey === "partly-cloudy-day") iconKey = "partly-cloudy-night";
+        else if (iconKey === "showers-day") iconKey = "showers-night";
     }
 
     /* City / country / local time. */
@@ -590,7 +824,7 @@ function displayWeather(place, data) {
     /* Condition. */
     conditionEl.textContent = codeEntry.description;
 
-    /* Feels-like temperature (distinct from actual temperature). */
+    /* Feels-like temperature. */
     const feelsC = isFiniteNumber(current.apparent_temperature) ? current.apparent_temperature : null;
     if (feelsC !== null && tempC !== null) {
         const tempDisp = currentUnit === "F" ? celsiusToFahrenheit(tempC) : tempC;
@@ -609,7 +843,7 @@ function displayWeather(place, data) {
         feelsNoteEl.textContent = "";
     }
 
-    /* Details with graceful missing-value handling. */
+    /* Details. */
     feelsLikeEl.textContent = feelsC !== null ? formatTemperature(feelsC) : "–";
     humidityEl.textContent = isFiniteNumber(current.relative_humidity_2m)
         ? `${current.relative_humidity_2m}%`
@@ -621,13 +855,13 @@ function displayWeather(place, data) {
         ? `${roundNumber(current.pressure_msl)} hPa`
         : "–";
 
-    /* Source transparency: genuine provider + observation timestamp. */
+    /* Source transparency. */
     const updated = data.current.time ? String(data.current.time).slice(11, 16) : "";
     dataSourceEl.textContent = updated
         ? `Open-Meteo model estimate · ${updated} local time`
         : "Open-Meteo model estimate";
 
-    /* Weather visual: trusted inline SVG, accessible alt text. */
+    /* Weather visual. */
     const iconSvg = WEATHER_ICONS[iconKey] || WEATHER_ICONS.unknown;
     weatherIconEl.src = svgDataUri(iconSvg);
     weatherIconEl.alt = codeEntry.description;
@@ -638,7 +872,8 @@ function displayWeather(place, data) {
         : "Switch to Celsius (°C)";
     unitBtn.disabled = false;
 
-    /* Show weather card. */
+    /* Show weather card and hide welcome guide. */
+    if (welcomeGuideEl) welcomeGuideEl.hidden = true;
     weatherCard.hidden = false;
 
     /* Forecasts. */
@@ -659,8 +894,6 @@ function renderHourly(hourly, unit, currentLocalTime) {
         const temp = hourly.temperature_2m ? hourly.temperature_2m[i] : null;
         const code = hourly.weather_code ? hourly.weather_code[i] : null;
         if (!timeStr || !isFiniteNumber(temp) || !isFiniteNumber(code)) continue;
-        // API timestamps are in the selected location's timezone. Lexical ISO
-        // comparison avoids applying the browser timezone or a stale UTC offset.
         if (typeof currentLocalTime === "string" && timeStr < currentLocalTime) continue;
         items.push({ time: timeStr, temp, code });
         if (items.length >= 12) {
@@ -677,10 +910,11 @@ function renderHourly(hourly, unit, currentLocalTime) {
     hourlyListEl.textContent = "";
     const fragment = document.createDocumentFragment();
 
-    for (const item of items) {
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
         const entry = getWeatherCodeEntry(item.code);
         const article = document.createElement("article");
-        article.className = "hour-card";
+        article.className = i === 0 ? "hour-card hour-card--now" : "hour-card";
         article.setAttribute(
             "aria-label",
             `${formatHourLabel(item.time)}: ${entry.description}, ${formatTemperature(item.temp)}`
@@ -688,14 +922,14 @@ function renderHourly(hourly, unit, currentLocalTime) {
 
         const timeEl = document.createElement("span");
         timeEl.className = "hour-time";
-        timeEl.textContent = formatHourLabel(item.time);
+        timeEl.textContent = i === 0 ? "Now" : formatHourLabel(item.time);
 
         const iconEl = document.createElement("img");
         iconEl.className = "hour-icon";
         iconEl.src = svgDataUri(WEATHER_ICONS[entry.icon] || WEATHER_ICONS.unknown);
         iconEl.alt = "";
-        iconEl.width = 36;
-        iconEl.height = 36;
+        iconEl.width = 32;
+        iconEl.height = 32;
 
         const tempEl = document.createElement("span");
         tempEl.className = "hour-temp";
@@ -707,7 +941,7 @@ function renderHourly(hourly, unit, currentLocalTime) {
     hourlyListEl.appendChild(fragment);
 }
 
-/** Render seven-day daily forecast. */
+/** Render seven-day daily forecast with visual temperature range bars. */
 function renderDaily(daily, unit) {
     if (!daily || !Array.isArray(daily.time) || daily.time.length === 0) {
         dailySection.hidden = true;
@@ -715,6 +949,8 @@ function renderDaily(daily, unit) {
     }
 
     const items = [];
+    const validMins = [];
+    const validMaxs = [];
     for (let i = 0; i < daily.time.length; i++) {
         const timeStr = daily.time[i];
         const max = daily.temperature_2m_max ? daily.temperature_2m_max[i] : null;
@@ -722,6 +958,8 @@ function renderDaily(daily, unit) {
         const code = daily.weather_code ? daily.weather_code[i] : null;
         if (!timeStr || !isFiniteNumber(max) || !isFiniteNumber(min) || !isFiniteNumber(code)) continue;
         items.push({ time: timeStr, max, min, code });
+        validMins.push(min);
+        validMaxs.push(max);
         if (items.length >= 7) {
             break;
         }
@@ -732,11 +970,17 @@ function renderDaily(daily, unit) {
         return;
     }
 
+    const weekMin = validMins.length ? Math.min(...validMins) : 0;
+    const weekMax = validMaxs.length ? Math.max(...validMaxs) : 0;
+    const rawSpan = weekMax - weekMin;
+    const rangeSpan = rawSpan > 0 ? rawSpan : 1;
+
     dailySection.hidden = false;
     dailyListEl.textContent = "";
     const fragment = document.createDocumentFragment();
 
-    for (const item of items) {
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
         const entry = getWeatherCodeEntry(item.code);
         const article = document.createElement("article");
         article.className = "day-card";
@@ -747,25 +991,55 @@ function renderDaily(daily, unit) {
 
         const labelEl = document.createElement("span");
         labelEl.className = "day-label";
-        labelEl.textContent = formatDayLabel(item.time);
+        labelEl.textContent = i === 0 ? "Today" : formatDayLabel(item.time);
 
         const iconEl = document.createElement("img");
         iconEl.className = "day-icon";
         iconEl.src = svgDataUri(WEATHER_ICONS[entry.icon] || WEATHER_ICONS.unknown);
         iconEl.alt = "";
-        iconEl.width = 40;
-        iconEl.height = 40;
+        iconEl.width = 28;
+        iconEl.height = 28;
 
-        const tempEl = document.createElement("div");
-        tempEl.className = "day-temp";
-        const highEl = document.createElement("span");
-        highEl.textContent = formatTemperature(item.max);
-        const lowEl = document.createElement("span");
-        lowEl.className = "low";
-        lowEl.textContent = formatTemperature(item.min);
-        tempEl.append(highEl, lowEl);
+        const conditionEl = document.createElement("span");
+        conditionEl.className = "day-condition-text";
+        conditionEl.textContent = entry.description;
 
-        article.append(labelEl, iconEl, tempEl);
+        // Visual Temperature Range Bar
+        const tempCluster = document.createElement("div");
+        tempCluster.className = "day-temp-cluster";
+
+        const minEl = document.createElement("span");
+        minEl.className = "range-min";
+        minEl.textContent = formatTemperature(item.min);
+
+        const trackEl = document.createElement("div");
+        trackEl.className = "range-track";
+
+        if (rawSpan > 0) {
+            const leftPct = Math.max(0, Math.min(94, ((item.min - weekMin) / rangeSpan) * 100));
+            const rightPct = Math.max(0, Math.min(100, ((weekMax - item.max) / rangeSpan) * 100));
+            const barWidth = Math.max(6, Math.min(100 - leftPct, 100 - leftPct - rightPct));
+
+            const barEl = document.createElement("div");
+            barEl.className = "range-bar";
+            barEl.style.left = `${leftPct.toFixed(1)}%`;
+            barEl.style.width = `${barWidth.toFixed(1)}%`;
+            trackEl.append(barEl);
+        } else {
+            const dotEl = document.createElement("div");
+            dotEl.className = "range-bar range-bar--flat";
+            dotEl.style.left = "45%";
+            dotEl.style.width = "10%";
+            trackEl.append(dotEl);
+        }
+
+        const maxEl = document.createElement("span");
+        maxEl.className = "range-max";
+        maxEl.textContent = formatTemperature(item.max);
+
+        tempCluster.append(minEl, trackEl, maxEl);
+
+        article.append(labelEl, iconEl, conditionEl, tempCluster);
         fragment.appendChild(article);
     }
     dailyListEl.appendChild(fragment);
@@ -867,8 +1141,9 @@ async function searchCity(city) {
         return;
     }
 
-    /* Only the latest search may restore the loading state, so an older,
-       slower request cannot prematurely re-enable controls for a newer one. */
+    if (welcomeGuideEl) welcomeGuideEl.hidden = true;
+
+    /* Only the latest search may restore the loading state. */
     const sequence = ++searchSequence;
     setLoading(true);
     showStatus("Searching for location…", "loading");
@@ -915,6 +1190,19 @@ unitBtn.addEventListener("click", () => {
     /* Re-render from cached data; no new API request. */
     displayWeather(weatherData.place, weatherData.data);
 });
+
+/* Quick search chips */
+if (typeof document.querySelectorAll === "function") {
+    document.querySelectorAll(".quick-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+            const city = chip.dataset.city;
+            if (city) {
+                cityInput.value = city;
+                searchCity(city);
+            }
+        });
+    });
+}
 
 /* Allow cancelling a pending search by typing a new city. */
 cityInput.addEventListener("input", () => {

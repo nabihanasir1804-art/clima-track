@@ -4,6 +4,9 @@ node_modules/
 # Local backups and audit/work notes
 .backup-*/
 *.log
+*.pre-redesign*
+tests/assets/weather-*.png
+tests/assets/welcome-*.png
 task.md
 task.md.bak
 instruction.md
